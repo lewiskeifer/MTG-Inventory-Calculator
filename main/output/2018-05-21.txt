@@ -1,2 +1,2 @@
-Total purchase cost: 280
-Total value: 649
+Total purchase cost: 220
+Total value: 755

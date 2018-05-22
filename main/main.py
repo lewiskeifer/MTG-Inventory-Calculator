@@ -5,7 +5,7 @@ import requests
 import csv
 from os import listdir
 from os.path import isfile, join
-from time import gmtime, strftime
+from time import localtime, strftime
 
 
 # global dictionary object that stores current inventory
@@ -98,7 +98,7 @@ def printTotals(token):
             totalValue += int(fetchCardPrice(card, token)) * int(card.quantity)
 
     # write data to file (named by today's date)
-    filename = "output/" + strftime("%Y-%m-%d", gmtime()) + ".txt"
+    filename = "output/" + strftime("%Y-%m-%d", localtime()) + ".txt"
     f = open(filename, 'w')
     f.write("Total purchase cost: " + str(totalBuyPrice) + '\n')
     f.write("Total value: " + str(totalValue) + '\n')
