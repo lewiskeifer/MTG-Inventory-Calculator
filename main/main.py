@@ -3,14 +3,14 @@ __author__ = 'Keifer'
 from card import Card
 import requests
 import csv
+from os import listdir
+from os.path import isfile, join
+from time import gmtime, strftime
 
 
 # global dictionary object that stores current inventory
 # is read from and saved to a CSV file
-##TODO quantities?
-##TODO other dict groups
 inventory = {}
-inventory["default"] = []
 
 
 def addCard():
@@ -47,11 +47,7 @@ def fetchCardPrice(card, token):
     response = requests.get(url, headers=headers)
     returnData = response.json()
 
-    # return format == dictionary of lists of dictionaries of lists of dictionaries
-
-    ##TODO index errs?
-    ##TODO condition
-
+    # return format == dictionary of lists of dictionaries of lists of dictionaries:
     # print(returnData["results"])
     # print(returnData["results"][0])
     # print(returnData["results"][0]["productConditions"])
@@ -62,7 +58,21 @@ def fetchCardPrice(card, token):
     count = 0
     for cardVersion in returnData["results"]:
         if card.version in returnData["results"][count]["url"]:
-            productConditionId = returnData["results"][count]["productConditions"][0]["productConditionId"]
+
+            # grab condition value, error if not found
+            condition = -1
+            if (card.condition == "nm"): condition = 0
+            elif (card.condition == "nm f"): condition = 1
+            elif (card.condition == "damaged"): condition = 2
+            elif (card.condition == "mp"): condition = 3
+            elif (card.condition == "hp"): condition = 4
+            elif (card.condition == "lp"): condition = 5
+            elif (card.condition == "damaged f"): condition = 6
+            elif (card.condition == "mp f"): condition = 7
+            elif (card.condition == "hp f"): condition = 8
+            elif (card.condition == "lp f"): condition = 9
+
+            productConditionId = returnData["results"][count]["productConditions"][condition]["productConditionId"]
 
             # format rest call to fetch market price
             url = "http://api.tcgplayer.com/pricing/marketprices/" + str(productConditionId)
@@ -81,33 +91,45 @@ def printTotals(token):
     totalBuyPrice = 0
     totalValue = 0
 
-    for card in inventory["default"]:
-        totalBuyPrice += int(card.buyPrice) * int(card.quantity)
-        totalValue += int(fetchCardPrice(card, token)) * int(card.quantity)
+    # aggregate total card value
+    for key, list in inventory.iteritems():
+        for card in list:
+            totalBuyPrice += int(card.buyPrice) * int(card.quantity)
+            totalValue += int(fetchCardPrice(card, token)) * int(card.quantity)
 
-    print("Total purchase cost: " + str(totalBuyPrice))
-    print("Total value: " + str(totalValue))
+    # write data to file (named by today's date)
+    filename = "output/" + strftime("%Y-%m-%d", gmtime()) + ".txt"
+    f = open(filename, 'w')
+    f.write("Total purchase cost: " + str(totalBuyPrice) + '\n')
+    f.write("Total value: " + str(totalValue) + '\n')
 
     return
 
 
 def save():
-    w = csv.writer(open("inventory.csv", "w"))
-    for key in inventory["default"]:
-        w.writerow([key.name, key.version, key.condition, key.buyPrice, key.quantity])
+    # dump inventory dictionary to file
+    w = csv.writer(open("output/inventory.csv", "w"))
+    for key, list in inventory.iteritems():
+        for card in list:
+            w.writerow([card.name, card.version, card.condition, card.buyPrice, card.quantity])
 
 
 def load():
+    # read all files in input/
+    # create inventory dictionary based on these input files
     try:
-        reader = csv.reader(open('inventory.csv', 'r'))
-        cardList = []
-        for row in reader:
-            card = Card(row[0], row[1], row[2], row[3], row[4])
-            cardList.append(card)
-        inventory["default"] = cardList
+        inputFiles = [f for f in listdir("input/") if isfile(join("input/", f))]
+
+        for file in inputFiles:
+            #reader = csv.reader(open('inventory.csv', 'r'))
+            reader = csv.reader(open("input/" + file, 'r'))
+            cardList = []
+            for row in reader:
+                card = Card(row[0], row[1], row[2], row[3], row[4])
+                cardList.append(card)
+            inventory[file] = cardList
     except IOError:
-        print("Import file not found - creating.")
-        outfile = open('inventory.csv', 'w')
+        print("Import file not found.")
 
 
 # loads config from textfile
@@ -127,20 +149,12 @@ def boot():
     # dirty way to grab token
     return returnData[17:343]
 
+
 ##### MAIN #####
 token = boot()
 load()
+printTotals(token)
+save()
 
-while True:
-    command = raw_input("Enter a command: ")
-
-    # quit
-    if command[0] == 'q':
-        break
-    # add
-    elif command[0] == 'a':
-        addCard()
-        save()
-    # print
-    elif command[0] == 'p':
-        printTotals(token)
+print("Complete.")
+###### END! #####
