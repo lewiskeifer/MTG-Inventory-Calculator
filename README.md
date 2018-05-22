@@ -8,7 +8,7 @@ config.txt:
 CLIENT_ID  
 CLIENT_SECRET  
 
-requests:
+requests:  
 python -m pip install requests
 
 I wanted to practice with Python since I hadn't written anything in a while.  The code is a bit hacky and probably doesn't follow Python best practices.
