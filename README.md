@@ -4,7 +4,7 @@ A personal project I use to keep track of the value of my MTG inventory.  This r
 
 REQUIRES:
 
-config.txt: 
+config.txt:  
 CLIENT_ID  
 CLIENT_SECRET  
 
