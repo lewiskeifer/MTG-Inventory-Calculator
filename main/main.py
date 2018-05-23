@@ -125,7 +125,8 @@ def load():
             reader = csv.reader(open("input/" + file, 'r'))
             cardList = []
             for row in reader:
-                card = Card(row[0], row[1], row[2], row[3], row[4])
+                card = Card(str(row[0]).lstrip(), str(row[1]).lstrip(), str(row[2]).lstrip(),
+                            str(row[3]).lstrip(), str(row[4]).lstrip())
                 cardList.append(card)
             inventory[file] = cardList
     except IOError:
