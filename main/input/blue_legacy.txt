@@ -1,0 +1,7 @@
+force of will,eternal,nm,75,4
+vedalken shackles,fifth,lp f,19,1
+vedalken shackles,fifth,nm,11,1
+sower of temptation,lorwyn,nm,15,3
+propaganda,tempest,nm,8,3
+kira great glass-spinner,masters,nm,15,1
+kira great glass-spinner,kamigawa,nm,15,2

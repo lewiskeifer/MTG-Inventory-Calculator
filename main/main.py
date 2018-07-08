@@ -94,8 +94,8 @@ def printTotals(token):
     # aggregate total card value
     for key, list in inventory.iteritems():
         for card in list:
-            totalBuyPrice += int(card.buyPrice) * int(card.quantity)
-            totalValue += int(fetchCardPrice(card, token)) * int(card.quantity)
+            totalBuyPrice += float(card.buyPrice) * int(card.quantity)
+            totalValue += float(fetchCardPrice(card, token)) * int(card.quantity)
 
     # write data to file (named by today's date)
     filename = "output/" + strftime("%Y-%m-%d", localtime()) + ".txt"
@@ -125,9 +125,12 @@ def load():
             reader = csv.reader(open("input/" + file, 'r'))
             cardList = []
             for row in reader:
-                card = Card(str(row[0]).lstrip(), str(row[1]).lstrip(), str(row[2]).lstrip(),
-                            str(row[3]).lstrip(), str(row[4]).lstrip())
-                cardList.append(card)
+                try:
+                    card = Card(str(row[0]).lstrip(), str(row[1]).lstrip(), str(row[2]).lstrip(),
+                                str(row[3]).lstrip(), str(row[4]).lstrip())
+                    cardList.append(card)
+                except IndexError:
+                    print("Failed to parse card " + str(row[0]))
             inventory[file] = cardList
     except IOError:
         print("Import file not found.")
