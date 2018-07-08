@@ -130,7 +130,7 @@ def load():
                                 str(row[3]).lstrip(), str(row[4]).lstrip())
                     cardList.append(card)
                 except IndexError:
-                    print("Failed to parse card " + str(row[0]))
+                    print("Failed to parse card: " + str(row[0]) + ".")
             inventory[file] = cardList
     except IOError:
         print("Import file not found.")
