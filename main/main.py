@@ -91,15 +91,27 @@ def printTotals(token):
     totalBuyPrice = 0
     totalValue = 0
 
+    currentListBuyPrice = 0
+    currentListTotalValue = 0
+
+    # write data to file (named by today's date)
+    filename = "output/" + strftime("%Y-%m-%d", localtime()) + ".txt"
+    f = open(filename, 'w')
+
     # aggregate total card value
     for key, list in inventory.iteritems():
         for card in list:
             totalBuyPrice += float(card.buyPrice) * int(card.quantity)
             totalValue += float(fetchCardPrice(card, token)) * int(card.quantity)
+            currentListBuyPrice += float(card.buyPrice) * int(card.quantity)
+            currentListTotalValue += float(fetchCardPrice(card, token)) * int(card.quantity)
+        f.write(str(key) + ":\n")
+        f.write("Total purchase cost: " + str(currentListBuyPrice) + '\n')
+        f.write("Total value: " + str(currentListTotalValue) + '\n\n')
+        currentListBuyPrice = 0
+        currentListTotalValue = 0
 
-    # write data to file (named by today's date)
-    filename = "output/" + strftime("%Y-%m-%d", localtime()) + ".txt"
-    f = open(filename, 'w')
+    f.write("***OVERALL***\n")
     f.write("Total purchase cost: " + str(totalBuyPrice) + '\n')
     f.write("Total value: " + str(totalValue) + '\n')
 
@@ -121,7 +133,6 @@ def load():
         inputFiles = [f for f in listdir("input/") if isfile(join("input/", f))]
 
         for file in inputFiles:
-            #reader = csv.reader(open('inventory.csv', 'r'))
             reader = csv.reader(open("input/" + file, 'r'))
             cardList = []
             for row in reader:
