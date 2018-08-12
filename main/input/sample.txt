@@ -1,3 +1,0 @@
-mox opal,scars,nm f,20,4
-arcbound ravager,darksteel,lp,20,4
-glimmervoid,mirrodin,damaged,20,3

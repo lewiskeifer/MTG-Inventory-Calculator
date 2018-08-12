@@ -91,15 +91,27 @@ def printTotals(token):
     totalBuyPrice = 0
     totalValue = 0
 
-    # aggregate total card value
-    for key, list in inventory.iteritems():
-        for card in list:
-            totalBuyPrice += int(card.buyPrice) * int(card.quantity)
-            totalValue += int(fetchCardPrice(card, token)) * int(card.quantity)
+    currentListBuyPrice = 0
+    currentListTotalValue = 0
 
     # write data to file (named by today's date)
     filename = "output/" + strftime("%Y-%m-%d", localtime()) + ".txt"
     f = open(filename, 'w')
+
+    # aggregate total card value
+    for key, list in inventory.iteritems():
+        for card in list:
+            totalBuyPrice += float(card.buyPrice) * int(card.quantity)
+            totalValue += float(fetchCardPrice(card, token)) * int(card.quantity)
+            currentListBuyPrice += float(card.buyPrice) * int(card.quantity)
+            currentListTotalValue += float(fetchCardPrice(card, token)) * int(card.quantity)
+        f.write(str(key) + ":\n")
+        f.write("Total purchase cost: " + str(currentListBuyPrice) + '\n')
+        f.write("Total value: " + str(currentListTotalValue) + '\n\n')
+        currentListBuyPrice = 0
+        currentListTotalValue = 0
+
+    f.write("***OVERALL***\n")
     f.write("Total purchase cost: " + str(totalBuyPrice) + '\n')
     f.write("Total value: " + str(totalValue) + '\n')
 
@@ -121,13 +133,15 @@ def load():
         inputFiles = [f for f in listdir("input/") if isfile(join("input/", f))]
 
         for file in inputFiles:
-            #reader = csv.reader(open('inventory.csv', 'r'))
             reader = csv.reader(open("input/" + file, 'r'))
             cardList = []
             for row in reader:
-                card = Card(str(row[0]).lstrip(), str(row[1]).lstrip(), str(row[2]).lstrip(),
-                            str(row[3]).lstrip(), str(row[4]).lstrip())
-                cardList.append(card)
+                try:
+                    card = Card(str(row[0]).lstrip(), str(row[1]).lstrip(), str(row[2]).lstrip(),
+                                str(row[3]).lstrip(), str(row[4]).lstrip())
+                    cardList.append(card)
+                except IndexError:
+                    print("Failed to parse card: " + str(row[0]) + ".")
             inventory[file] = cardList
     except IOError:
         print("Import file not found.")
