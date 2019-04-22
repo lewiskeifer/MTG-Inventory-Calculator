@@ -1,0 +1,8 @@
+.idea/*
+main/failedCards.txt
+main/rules.txt
+main/input/*
+main/output/*
+config.txt
+tcgReq.txt
+venv/*

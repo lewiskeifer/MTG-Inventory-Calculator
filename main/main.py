@@ -5,7 +5,7 @@ import requests
 import csv
 from os import listdir
 from os.path import isfile, join
-from time import gmtime, strftime
+from time import localtime, strftime
 
 
 # global dictionary object that stores current inventory
@@ -42,7 +42,7 @@ def fetchCardPrice(card, token):
     # format rest call to fetch productConditionId
     headers = {
         "Authorization": "bearer " + token }#"hKLEpcHIvOKSFKNNk31xXAsk9qEH7LpLc6jbdeVfN4yPbYSGBUBp92JVdiEHI8MaoCvLvWHvjMU_RP9zxVDgDGDOzen-jRUt7jLhekZzyd6TGA7p7czsGWkOnzmfUUB9GuWJ-gzwjxWvSleUxgQ4onoH2CXHJHtakajQZp05iq61SmcUBCQHIiZGh0Qtn1cNc02o4AVyoiWWRJXdzRlZZWr_1ac2tD23RJrtj1oI6kzA5Qbasap7TVKs8CPaFMXCZqLlzGgPNirPEgenqU9aCDoI_B-2FdMGWsUMBif8o8EiJRaH6YUfi_-wmI0AdmUfHw8qGQ"}
-    url = "http://api.tcgplayer.com/catalog/products?categoryId=1&productTypes=Cards&productName=" + card.name
+    url = "http://api.tcgplayer.com/v1.14.0/catalog/products?categoryId=1&productTypes=Cards&productName=" + card.name
 
     response = requests.get(url, headers=headers)
     returnData = response.json()
@@ -91,15 +91,27 @@ def printTotals(token):
     totalBuyPrice = 0
     totalValue = 0
 
+    currentListBuyPrice = 0
+    currentListTotalValue = 0
+
+    # write data to file (named by today's date)
+    filename = "output/" + strftime("%Y-%m-%d", localtime()) + ".txt"
+    f = open(filename, 'w')
+
     # aggregate total card value
     for key, list in inventory.iteritems():
         for card in list:
-            totalBuyPrice += int(card.buyPrice) * int(card.quantity)
-            totalValue += int(fetchCardPrice(card, token)) * int(card.quantity)
+            totalBuyPrice += float(card.buyPrice) * int(card.quantity)
+            totalValue += float(fetchCardPrice(card, token)) * int(card.quantity)
+            currentListBuyPrice += float(card.buyPrice) * int(card.quantity)
+            currentListTotalValue += float(fetchCardPrice(card, token)) * int(card.quantity)
+        f.write(str(key) + ":\n")
+        f.write("Total purchase cost: " + str(currentListBuyPrice) + '\n')
+        f.write("Total value: " + str(currentListTotalValue) + '\n\n')
+        currentListBuyPrice = 0
+        currentListTotalValue = 0
 
-    # write data to file (named by today's date)
-    filename = "output/" + strftime("%Y-%m-%d", gmtime()) + ".txt"
-    f = open(filename, 'w')
+    f.write("***OVERALL***\n")
     f.write("Total purchase cost: " + str(totalBuyPrice) + '\n')
     f.write("Total value: " + str(totalValue) + '\n')
 
@@ -121,12 +133,15 @@ def load():
         inputFiles = [f for f in listdir("input/") if isfile(join("input/", f))]
 
         for file in inputFiles:
-            #reader = csv.reader(open('inventory.csv', 'r'))
             reader = csv.reader(open("input/" + file, 'r'))
             cardList = []
             for row in reader:
-                card = Card(row[0], row[1], row[2], row[3], row[4])
-                cardList.append(card)
+                try:
+                    card = Card(str(row[0]).lstrip(), str(row[1]).lstrip(), str(row[2]).lstrip(),
+                                str(row[3]).lstrip(), str(row[4]).lstrip())
+                    cardList.append(card)
+                except IndexError:
+                    print("Failed to parse card: " + str(row[0]) + ".")
             inventory[file] = cardList
     except IOError:
         print("Import file not found.")
