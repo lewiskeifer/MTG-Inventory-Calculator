@@ -42,7 +42,7 @@ def fetchCardPrice(card, token):
     # format rest call to fetch productConditionId
     headers = {
         "Authorization": "bearer " + token }#"hKLEpcHIvOKSFKNNk31xXAsk9qEH7LpLc6jbdeVfN4yPbYSGBUBp92JVdiEHI8MaoCvLvWHvjMU_RP9zxVDgDGDOzen-jRUt7jLhekZzyd6TGA7p7czsGWkOnzmfUUB9GuWJ-gzwjxWvSleUxgQ4onoH2CXHJHtakajQZp05iq61SmcUBCQHIiZGh0Qtn1cNc02o4AVyoiWWRJXdzRlZZWr_1ac2tD23RJrtj1oI6kzA5Qbasap7TVKs8CPaFMXCZqLlzGgPNirPEgenqU9aCDoI_B-2FdMGWsUMBif8o8EiJRaH6YUfi_-wmI0AdmUfHw8qGQ"}
-    url = "http://api.tcgplayer.com/catalog/products?categoryId=1&productTypes=Cards&productName=" + card.name
+    url = "http://api.tcgplayer.com/v1.14.0/catalog/products?categoryId=1&productTypes=Cards&Limit=50&productName=" + card.name
 
     response = requests.get(url, headers=headers)
     returnData = response.json()

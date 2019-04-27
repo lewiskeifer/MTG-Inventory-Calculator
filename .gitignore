@@ -1,5 +1,8 @@
 .idea/
 venv/
+main/failedCards.txt
+main/input/
+main/rules.txt
 main/output/
 config.txt
 tcgReq.txt
