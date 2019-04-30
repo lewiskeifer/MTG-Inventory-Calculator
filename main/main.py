@@ -101,10 +101,12 @@ def printTotals(token):
     # aggregate total card value
     for key, list in inventory.iteritems():
         for card in list:
-            totalBuyPrice += float(card.buyPrice) * int(card.quantity)
-            totalValue += float(fetchCardPrice(card, token)) * int(card.quantity)
-            currentListBuyPrice += float(card.buyPrice) * int(card.quantity)
-            currentListTotalValue += float(fetchCardPrice(card, token)) * int(card.quantity)
+            currentValue = float(fetchCardPrice(card, token)) * int(card.quantity)
+            currentBuyPrice = float(card.buyPrice) * int(card.quantity)
+            totalBuyPrice += currentBuyPrice
+            totalValue += currentValue
+            currentListBuyPrice += currentBuyPrice
+            currentListTotalValue += currentValue
         f.write(str(key) + ":\n")
         f.write("Total purchase cost: " + str(currentListBuyPrice) + '\n')
         f.write("Total value: " + str(currentListTotalValue) + '\n\n')
@@ -115,7 +117,7 @@ def printTotals(token):
     f.write("Total purchase cost: " + str(totalBuyPrice) + '\n')
     f.write("Total value: " + str(totalValue) + '\n')
 
-    return
+    return str(totalValue)
 
 
 def save():
@@ -168,8 +170,8 @@ def boot():
 ##### MAIN #####
 token = boot()
 load()
-printTotals(token)
+total = printTotals(token)
 save()
 
-print("Complete.")
+print("Complete: " + total)
 ###### END! #####
