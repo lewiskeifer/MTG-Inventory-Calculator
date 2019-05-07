@@ -168,6 +168,8 @@ def boot():
 
 
 ##### MAIN #####
+print("Running...")
+
 token = boot()
 load()
 total = printTotals(token)
