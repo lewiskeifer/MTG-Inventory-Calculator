@@ -160,8 +160,8 @@ def boot():
     data = "grant_type=client_credentials&client_id=" + str(configText[0]) + "&client_secret=" + str(configText[1])
     headers = {"Content-type": "application/x-www-form-urlencoded"}
 
-    respsonse = requests.post(url=url, data=data, headers=headers)
-    returnData = respsonse.content
+    response = requests.post(url=url, data=data, headers=headers)
+    returnData = response.content
 
     # dirty way to grab token
     return returnData[17:343]
